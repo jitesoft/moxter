@@ -1,0 +1,15 @@
+.env
+.env-example
+.gitignore
+.gitlab-ci.yml
+*.iml
+.dockerignore
+.idea/
+.git/
+vendor/
+tests/
+phpunit.xml
+style.xml
+readme.md
+Dockerfile
+log.txt

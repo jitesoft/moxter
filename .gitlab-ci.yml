@@ -1,0 +1,19 @@
+stages:
+  - test
+  - build
+
+Test:
+  image: jitesoft/composer:latest
+  stage: test
+  script:
+    - composer install
+    - composer test
+
+Build:
+  image: docker:latest
+  stage: build
+  before_script:
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.gitlab.com
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME//\//\-} --no-cache .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME//\//\-}

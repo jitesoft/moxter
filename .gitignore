@@ -1,0 +1,6 @@
+/vendor/
+.idea/
+.env
+*.iml
+log.txt
+clover.xml
