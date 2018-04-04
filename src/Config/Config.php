@@ -18,6 +18,8 @@ final class Config implements ConfigInterface {
         if (isset($_ENV[$name])) {
             return $_ENV[$name];
         }
+
         return null;
     }
+
 }

@@ -7,6 +7,7 @@ namespace Jitesoft\Moxter\Contracts;
  * Interface for configuration objects.
  */
 interface ConfigInterface {
+
     /**
      * Fetch config using its key.
      *
@@ -15,4 +16,5 @@ interface ConfigInterface {
      * @return mixed
      */
     public function get(string $name, $default = null);
+
 }
