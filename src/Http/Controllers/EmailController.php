@@ -89,10 +89,10 @@ class EmailController implements LoggerAwareInterface {
         $this->logger->debug('Validation completed successfully.');
 
         try {
-            $sender = $this->config->get('SENDER', 'do-not-reply@' . $appName);
+            $sender = $this->config->get('SENDER', 'do-not-reply@' . $appName . '.x');
             $isHtml = $this->config->get('HTML_EMAILS', false);
 
-            $this->service->send($sender, $body['to'], $body['subject'], $body['body'], $isHtml);
+            $this->service->send($sender, $appName, $body['to'], $body['subject'], $body['body'], $isHtml);
             $this->logger->info('Email sent.');
         } catch (Exception $ex) {
             $this->logger->alert('Failed to send email!');
