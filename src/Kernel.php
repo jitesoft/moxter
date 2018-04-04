@@ -62,7 +62,6 @@ class Kernel {
                 )
             );
 
-
             try {
                 $this->logger = $this->container->get(LoggerInterface::class);
                 $this->router = $this->container->get(Router::class);
