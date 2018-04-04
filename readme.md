@@ -13,6 +13,7 @@ The following variables are defined in the configuration and should be set with
 your information and wanted behaviour.
 
 ```
+LOG_FILE=/tmp/moxter.log
 SMTP_SERVER=mail.example.com
 SMTP_PORT=587
 SMTP_USER=user@example.com
@@ -24,6 +25,10 @@ EMAIL_CONSTRAINT=/(.*)@(.*)/
 HTML_EMAILS=false
 SENDER=my@email.tdl
 ```
+
+**LOG_FILE**  
+Absolute path to the file that logs should be printed to.  
+If not set, the `sys_get_temp_dir() . '/moxter.log` file will be used.  
 
 **SMTP_SERVER**  
 The smtp server which is to be used for sending emails.
@@ -44,7 +49,8 @@ A regular expression to use for cross site scripting.
 If the requesting origin matches the regex, it will allow for requests, else it will not.
 
 **DEBUG**  
-If true, the server will output debug information to the log file (`log.txt`).
+If true, the server will output debug information to the log file (`sys_get_temp_dir() . '/moxter/log.txt'`).  
+Can be changed by setting the `LOG_FILE` variable.  
 
 **APP_ENV**  
 Set this to production when running on a live server, if set to development, it will allow for x-site scripting and 

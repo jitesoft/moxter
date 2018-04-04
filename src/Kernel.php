@@ -40,17 +40,28 @@ class Kernel {
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws HttpInternalServerErrorException
+     * @throws NotFoundExceptionInterface
      */
     public function __construct() {
         try {
             $this->container = new Container();
             $this->container->set(ContainerInterface::class, $this->container);
-            $this->container->set(LoggerInterface::class, new FileLogger('log.txt'));
             $this->container->set(Router::class, Router::class, true);
             $this->container->set(ConfigInterface::class, Config::class, true);
             $this->container->set(EmailServiceInterface::class, EmailService::class, true);
             $this->container->set(PHPMailer::class, new PHPMailer(true));
+
+            $config = $this->container->get(ConfigInterface::class);
+
+            $this->container->set(
+                LoggerInterface::class,
+                new FileLogger(
+                    $config->get('LOG_FILE', sys_get_temp_dir() . '/moxter.log')
+                )
+            );
+
 
             try {
                 $this->logger = $this->container->get(LoggerInterface::class);
