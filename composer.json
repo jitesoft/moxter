@@ -12,8 +12,8 @@
         "phpmailer/phpmailer": "^6.0",
         "jitesoft/container": "^4.0",
         "jitesoft/exceptions": "^2.2",
-        "jitesoft/validator": "^0.0.4",
-        "jitesoft/router": "dev-master",
+        "jitesoft/validator": "^0.0.5",
+        "jitesoft/router": "^0.0.5",
         "jitesoft/loggers": "^1.1"
     },
     "scripts": {

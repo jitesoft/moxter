@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d20b078eda82e1041e8473b9ab675a80",
+    "content-hash": "49d8dc954583466211a6e33dd48611e0",
     "packages": [
         {
             "name": "jitesoft/container",
@@ -137,7 +137,7 @@
         },
         {
             "name": "jitesoft/router",
-            "version": "dev-master",
+            "version": "0.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jitesoft/php-router.git",
@@ -183,16 +183,16 @@
         },
         {
             "name": "jitesoft/validator",
-            "version": "0.0.4",
+            "version": "0.0.5",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jitesoft/open-source/php/validator.git",
-                "reference": "391b48e08edf8c74558a3dd0b862579303f1c486"
+                "reference": "ad232ebe96c7237041f3bf2b2a5f7816f2fb8112"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fvalidator/repository/archive.zip?sha=391b48e08edf8c74558a3dd0b862579303f1c486",
-                "reference": "391b48e08edf8c74558a3dd0b862579303f1c486",
+                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fvalidator/repository/archive.zip?sha=ad232ebe96c7237041f3bf2b2a5f7816f2fb8112",
+                "reference": "ad232ebe96c7237041f3bf2b2a5f7816f2fb8112",
                 "shasum": ""
             },
             "require": {
@@ -221,7 +221,7 @@
                 }
             ],
             "description": "Validation resources and rules.",
-            "time": "2018-03-26T14:25:50+00:00"
+            "time": "2018-04-04T10:29:26+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -2222,9 +2222,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "jitesoft/router": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
