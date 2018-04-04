@@ -64,13 +64,11 @@ class Kernel {
                     ExceptionHandler::class,
                     OriginCheck::class
                 ]);
-
             } catch (NotFoundExceptionInterface $e) {
                 throw new Exception($e->getMessage());
             } catch (ContainerExceptionInterface $e) {
                 throw new Exception($e->getMessage());
             }
-
         } catch (Exception $ex) {
             throw new HttpInternalServerErrorException('Failure in kernel creation.', 500, $ex);
         }

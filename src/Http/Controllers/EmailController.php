@@ -46,6 +46,7 @@ class EmailController implements LoggerAwareInterface {
         if (!array_key_exists($key, $data)) {
             throw new ValidationException(sprintf('Missing property: "%s".', $key));
         }
+
         return true;
     }
 
@@ -91,7 +92,6 @@ class EmailController implements LoggerAwareInterface {
         try {
             $sender = $this->config->get('SENDER', 'do-not-reply@' . $appName . '.x');
             $isHtml = $this->config->get('HTML_EMAILS', false);
-
             $this->service->send($sender, $appName, $body['to'], $body['subject'], $body['body'], $isHtml);
             $this->logger->info('Email sent.');
         } catch (Exception $ex) {

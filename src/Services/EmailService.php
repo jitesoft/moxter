@@ -94,4 +94,5 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
     public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
     }
+
 }
