@@ -7,10 +7,16 @@
 namespace Jitesoft\Moxter\Tests;
 
 use Jitesoft\Container\Container;
+use Jitesoft\Log\NullLogger;
 use Jitesoft\Moxter\Config\Config;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
+use Jitesoft\Moxter\Contracts\EmailServiceInterface;
+use Jitesoft\Moxter\Http\Controllers\EmailController;
+use Jitesoft\Moxter\Services\EmailService;
+use PHPMailer\PHPMailer\PHPMailer;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * AbstractTestCase
@@ -27,7 +33,8 @@ class AbstractTestCase extends TestCase {
 
         $this->container = new Container();
         // Set up bindings.
-        $this->container->set(ConfigInterface::class, Config::class);
+        $this->container->set(ConfigInterface::class, Config::class, true);
+        $this->container->set(LoggerInterface::class, NullLogger::class, true);
     }
 
     protected function tearDown() {
