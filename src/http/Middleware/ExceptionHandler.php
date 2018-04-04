@@ -59,4 +59,5 @@ class ExceptionHandler implements MiddlewareInterface, LoggerAwareInterface {
     public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
     }
+
 }
