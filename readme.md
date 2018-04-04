@@ -9,6 +9,22 @@ correspond to your server and settings.
 
 ### Environment variables
 
+The following variables are defined in the configuration and should be set with
+your information and wanted behaviour.
+
+```
+SMTP_SERVER=mail.example.com
+SMTP_PORT=587
+SMTP_USER=user@example.com
+SMTP_PASSWORD=secret_password
+DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/
+DEBUG=false
+APP_ENV=production
+EMAIL_CONSTRAINT=/(.*)@(.*)/
+HTML_EMAILS=false
+SENDER=my@email.tdl
+```
+
 **SMTP_SERVER**  
 The smtp server which is to be used for sending emails.
 
@@ -36,3 +52,10 @@ ignore any origin constraints and such.
 
 **EMAIL_CONSTRAINT**  
 A regex string to set a constraint to email addresses that the app will allow to send emails to.
+
+**HTML_EMAILS**
+If you wish to allow the emails being sent by the API to be able to use HTML. Setting this to true will make all
+emails behave as html emails.
+
+**SENDER**
+The email address of the sender. Will be used on all emails sent by the api.
