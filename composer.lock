@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "326494cbfb21fcc9200242e12cc81720",
+    "content-hash": "9a95684da55ab5680dd76e9260003698",
     "packages": [
         {
             "name": "jitesoft/container",
@@ -183,16 +183,16 @@
         },
         {
             "name": "jitesoft/validator",
-            "version": "0.0.5",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jitesoft/open-source/php/validator.git",
-                "reference": "ad232ebe96c7237041f3bf2b2a5f7816f2fb8112"
+                "reference": "d26ebe3dcdf2ec35ed8ec4d841c3370ee206af1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fvalidator/repository/archive.zip?sha=ad232ebe96c7237041f3bf2b2a5f7816f2fb8112",
-                "reference": "ad232ebe96c7237041f3bf2b2a5f7816f2fb8112",
+                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fvalidator/repository/archive.zip?sha=d26ebe3dcdf2ec35ed8ec4d841c3370ee206af1d",
+                "reference": "d26ebe3dcdf2ec35ed8ec4d841c3370ee206af1d",
                 "shasum": ""
             },
             "require": {
@@ -221,7 +221,7 @@
                 }
             ],
             "description": "Validation resources and rules.",
-            "time": "2018-04-04T10:29:26+00:00"
+            "time": "2018-04-04T15:31:34+00:00"
         },
         {
             "name": "nesbot/carbon",

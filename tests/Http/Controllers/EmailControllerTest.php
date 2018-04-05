@@ -37,23 +37,24 @@ class EmailControllerTest extends AbstractTestCase {
     public function testHandleValidationFailureTo() {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('argh! is not a valid email address.');
-
         $request = ServerRequestFactory::fromGlobals([], [], [
             'to' => 'argh!',
             'subject' => 'abc123',
             'body' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' .
                       'Morbi nec orci lobortis, maximus sem et, bibendum ex. Maecenas sit amet mattis nisl. In amet.'
         ], [], []);
-        $controller->handle($request, 'app');
+        $response = $controller->handle($request, 'app');
+
+        $this->assertEquals([
+            'to' => [
+                'email' => 'argh! is not a valid email address.'
+            ]
+        ], json_decode($response->getBody()->getContents(), true));
+
     }
 
     public function testHandleValidationFailureSubject() {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
-
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Value was lower than minimum bounds.');
 
         $request = ServerRequestFactory::fromGlobals([], [], [
             'to' => 'local@local',
@@ -61,21 +62,30 @@ class EmailControllerTest extends AbstractTestCase {
             'body' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' .
                 'Morbi nec orci lobortis, maximus sem et, bibendum ex. Maecenas sit amet mattis nisl. In amet.'
         ], [], []);
-        $controller->handle($request, 'app');
+        $response = $controller->handle($request, 'app');
+
+        $this->assertEquals([
+            'subject' => [
+                'min' => 'Value was lower than minimum bounds.'
+            ]
+        ], json_decode($response->getBody()->getContents(), true));
     }
 
     public function testHandleValidationFailureBody() {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
-
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Value was lower than minimum bounds.');
 
         $request = ServerRequestFactory::fromGlobals([], [], [
             'to' => 'local@local',
             'subject' => 'abc',
             'body' => 'Lorem ipsum dolor sit amet'
         ], [], []);
-        $controller->handle($request, 'app');
+        $response = $controller->handle($request, 'app');
+
+        $this->assertEquals([
+            'body' => [
+                'min' => 'Value was lower than minimum bounds.'
+            ]
+        ], json_decode($response->getBody()->getContents(), true));
     }
 
     public function testHandleExceptionOnSend() {
