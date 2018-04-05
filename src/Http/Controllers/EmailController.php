@@ -33,7 +33,7 @@ class EmailController implements LoggerAwareInterface {
         $this->validator = new Validator([
             Email::class,
             Text::class
-        ], true);
+        ], false);
     }
 
     /**
@@ -65,27 +65,31 @@ class EmailController implements LoggerAwareInterface {
         $this->keyExists($body, 'body');
         $this->keyExists($body, 'subject');
 
-        $this->validator->validate([
-            $body['to'] => [
+        $result = $this->validator->validate([
+            'to' => [
                 'email' => [
                     'pattern' => $this->config->get('EMAIL_CONSTRAINT', '/.*?/')
                 ]
             ],
-            $body['subject'] => [
+            'subject' => [
                 'text' => [
                     'length' => [
                         'min' => 1
                     ]
                 ]
             ],
-            $body['body'] => [
+            'body' => [
                 'text' => [
                     'length' => [
                         'min' => 50
                     ]
                 ]
             ]
-        ]);
+        ], $body);
+
+        if (!$result) {
+            return new JsonResponse($this->validator->getErrors(), 400);
+        }
 
         $this->logger->debug('Validation completed successfully.');
 
