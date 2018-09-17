@@ -17,7 +17,7 @@ build:master:
   script:
     - BUILD=$(docker build -q --no-cache .)
     - TAGS="latest ${CI_COMMIT_REF_NAME}"
-    - for tag in ${TAGS}; do docker tag ${BUILD} ${IMG_NAME}:${tag}; docker push ${IMG_NAME}:${tag}; done
+    - for tag in ${TAGS}; do docker tag ${BUILD} ${CI_COMMIT_REF_NAME}:${tag}; docker push ${CI_COMMIT_REF_NAME}:${tag}; done
   only:
     - master
 
