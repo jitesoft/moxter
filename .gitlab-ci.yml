@@ -2,18 +2,32 @@ stages:
   - test
   - build
 
-Test:
+test:
   image: jitesoft/composer:latest
   stage: test
   script:
     - composer install
     - composer test
 
-Build:
+build:master:
   image: docker:latest
   stage: build
   before_script:
-    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.gitlab.com
+    - echo ${CI_REGISTRY_PASSWORD} | docker login registry.gitlab.com -u ${CI_REGISTRY_USER} --password-stdin
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME//\//\-} --no-cache .
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME//\//\-}
+    - BUILD=$(docker build -q --no-cache .)
+    - TAGS="latest ${CI_COMMIT_REF_NAME}"
+    - for tag in ${TAGS}; do docker tag ${BUILD} ${IMG_NAME}:${tag}; docker push ${IMG_NAME}:${tag}; done
+  only:
+    - master
+
+build:tag:
+  image: docker:latest
+  stage: build
+  before_script:
+    - echo ${CI_REGISTRY_PASSWORD} | docker login registry.gitlab.com -u ${CI_REGISTRY_USER} --password-stdin
+  script:
+    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} --no-cache .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+  only:
+    - tags
