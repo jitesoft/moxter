@@ -3,8 +3,8 @@
     "description": "Mini API to proxy email request to a SMTP server. Intended to be used by applications not able to store their secret data safely.",
     "type": "project",
     "require": {
-        "php": ">=7.1",
-        "ext-openssl": ">=7.1",
+        "php": ">=7.2",
+        "ext-openssl": ">=7.2",
         "vlucas/phpdotenv": "^2.4",
         "nesbot/carbon": "^1.23",
         "nikic/fast-route": "^1.3",

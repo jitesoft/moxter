@@ -4,7 +4,6 @@ RUN composer install --no-progress --prefer-dist --no-dev --no-suggest -o
 
 FROM jitesoft/php-fpm:latest
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>"
-
 ENV LOG_FILE="/dev/stdout" \
     SMTP_SERVER="mail.example.com" \
     SMTP_PORT="587" \

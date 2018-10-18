@@ -13,11 +13,11 @@ build:master:
   image: docker:latest
   stage: build
   before_script:
-    - echo ${CI_REGISTRY_PASSWORD} | docker login registry.gitlab.com -u ${CI_REGISTRY_USER} --password-stdin
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
   script:
     - BUILD=$(docker build -q --no-cache .)
     - TAGS="latest ${CI_COMMIT_REF_NAME}"
-    - for tag in ${TAGS}; do docker tag ${BUILD} ${CI_COMMIT_REF_NAME}:${tag}; docker push ${CI_COMMIT_REF_NAME}:${tag}; done
+    - for tag in ${TAGS}; do docker tag ${BUILD} ${CI_REGISTRY_IMAGE}:${tag}; docker push ${CI_REGISTRY_IMAGE}:${tag}; done
   only:
     - master
 
