@@ -5,7 +5,7 @@ use Jitesoft\Moxter\Kernel;
 
 require '../vendor/autoload.php';
 
-(new Dotenv\Dotenv(__DIR__ . '../'))->load();
+(new Dotenv\Dotenv(__DIR__ . '/../'))->load();
 
 
 $output = [];
