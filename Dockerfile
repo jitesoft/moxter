@@ -14,3 +14,4 @@ ENV LOG_FILE="/dev/stdout" \
     EMAIL_CONSTRAINT="/(.*)@(*)/"
 
 COPY --from=build /app /app
+WORKDIR /app/public
