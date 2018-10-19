@@ -36,7 +36,7 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         $this->mailer->Password    = $config->get('SMTP_PASSWORD');
         $this->mailer->Port        = $config->get('SMTP_PORT');
         $this->mailer->Host        = $config->get('SMTP_SERVER');
-        $this->mailer->SMTPDebug   = $config->get('DEBUG') ? 2 : 0;
+        $this->mailer->SMTPDebug   = $config->get('DEBUG') === true ? 2 : 0;
 
         if ($config->get('SMTP_INSECURE', false)) {
             $this->logger->warning('SMTP_INSECURE set to true. Do you really want this?');
