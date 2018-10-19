@@ -29,21 +29,31 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         $this->mailer = $mailer;
         $this->mailer->isSMTP();
 
-        $this->mailer->SMTPAuth    = true;
+        $this->mailer->SMTPAuth    = $config->get('SMTP_USER') ? true : false;
         $this->mailer->SMTPAutoTLS = false;
-        $this->mailer->SMTPSecure  = 'tls';
+        $this->mailer->SMTPSecure  = $config->get('TLS', false) !== false ? 'tls' : '';
         $this->mailer->Username    = $config->get('SMTP_USER');
         $this->mailer->Password    = $config->get('SMTP_PASSWORD');
         $this->mailer->Port        = $config->get('SMTP_PORT');
         $this->mailer->Host        = $config->get('SMTP_SERVER');
         $this->mailer->SMTPDebug   = $config->get('DEBUG') === true ? 2 : 0;
 
+        if ($config->get('SIGN_CERT', null) !== null) {
+            $logger->info('Certificate found, signing message...');
+            $mailer->sign(
+                $config->get('SIGN_CERT'),
+                $config->get('SIGN_KEY'),
+                $config->get('SIGN_KEY_PASS')
+            );
+        }
+
+
         if ($config->get('SMTP_INSECURE', false)) {
             $this->logger->warning('SMTP_INSECURE set to true. Do you really want this?');
             $this->mailer->SMTPOptions = array(
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
                     'allow_self_signed' => true
                 ]
             );
