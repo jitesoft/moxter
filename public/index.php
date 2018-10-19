@@ -31,7 +31,7 @@ try {
     $output = [
         'error' => $ex->getMessage()
     ];
-    if (getenv('DEBUG') == true) {
+    if (isset($_ENV['DEBUG']) && boolval($_ENV['DEBUG']) === true) {
         $output['exception'] = $ex->toArray();
     }
 
@@ -41,7 +41,7 @@ try {
         'error' => 'Internal server error.'
     ];
 
-    if (getenv('DEBUG') == true) {
+    if (isset($_ENV['DEBUG']) && boolval($_ENV['DEBUG']) === true) {
         $output['exception'] = $ex->getMessage();
     }
 

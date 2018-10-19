@@ -37,9 +37,14 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
 
         $this->mailer->SMTPAutoTLS = false;
         $this->mailer->SMTPSecure  = $config->get('TLS', false) !== false ? 'tls' : '';
-        $this->mailer->Port        = $config->get('SMTP_PORT');
-        $this->mailer->Host        = $config->get('SMTP_SERVER');
+        $this->mailer->Port        = $config->get('SMTP_PORT', 25);
+        $this->mailer->Host        = $config->get('SMTP_SERVER', 'localhost');
         $this->mailer->SMTPDebug   = $config->get('DEBUG') === true ? 2 : 0;
+
+        $logger->info('Querying SMTP server at {ip}:{port}', [
+            'ip' => $this->mailer->Host,
+            'port' => $this->mailer->Port
+        ]);
 
         if ($config->get('SIGN_CERT', null) !== null) {
             $logger->info('Certificate found, signing message...');

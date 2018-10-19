@@ -11,8 +11,13 @@ use Jitesoft\Moxter\Contracts\ConfigInterface;
  */
 final class Config implements ConfigInterface {
 
-    public function get(string $name, $default = null) {
-        return $this->{$name} ?? $default;
+    public function get(string $name, $default = null, ?callable $cast = null) {
+        $result = $this->{$name};
+        if ($result !== null && $cast !== null) {
+            return $cast($result);
+        }
+
+        return $result ?? $default;
     }
 
     public function __get(string $name) {
