@@ -47,7 +47,7 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         $this->mailer->isSMTP();
         $this->mailer->SMTPAuth = isset($_ENV['SMTP_USER']);
 
-        if ($this->mailer->SMTPAuth) {
+        if ($config->get('SMTP_AUTH', false, $this->convertTo('bool'))) {
             $logger->info('SMTP Auth is enabled.');
             $this->mailer->Username = $config->get('SMTP_USER');
             $this->mailer->Password = $config->get('SMTP_PASSWORD');

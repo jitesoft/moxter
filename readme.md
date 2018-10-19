@@ -16,6 +16,7 @@ your information and wanted behaviour.
 LOG_FILE=/tmp/moxter.log
 SMTP_SERVER=mail.example.com
 SMTP_PORT=587
+SMTP_AUTH=false
 SMTP_USER=user@example.com
 SMTP_PASSWORD=secret_password
 DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/
