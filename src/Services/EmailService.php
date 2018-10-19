@@ -28,13 +28,13 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         // Set up the mailer.
         $this->mailer = $mailer;
         $this->mailer->isSMTP();
-
         $this->mailer->SMTPAuth = $config->get('SMTP_USER', false) ? true : false;
 
         if ($this->mailer->SMTPAuth) {
             $this->mailer->Username = $config->get('SMTP_USER');
             $this->mailer->Password = $config->get('SMTP_PASSWORD');
         }
+
         $this->mailer->SMTPAutoTLS = false;
         $this->mailer->SMTPSecure  = $config->get('TLS', false) !== false ? 'tls' : '';
         $this->mailer->Port        = $config->get('SMTP_PORT');
