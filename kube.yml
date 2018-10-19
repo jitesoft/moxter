@@ -1,0 +1,144 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moxter-svc
+  namespace: default
+spec:
+  selector:
+    app: moxter
+    type: email-proxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: moxter-ing
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: moxter.mypage.com
+      http:
+        paths:
+          - backend:
+              serviceName: moxter-svc
+              servicePort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moxter-config
+data:
+  .env: |
+    SMTP_SERVER=127.0.0.1
+    SMTP_PORT=587
+    DOMAINS=/https:\/\/(.*\.)?(mypage)(\.(com|eu))/
+    DEBUG=false
+    APP_ENV=production
+    EMAIL_CONSTRAINT=/(.*)@(mypage)(\.(com|eu))/
+    SENDER=webpage@mypage.com
+    LOG_FILE=/tmp/moxter.log
+  default.conf: |
+    upstream phpfpm_backend {
+      server 127.0.0.1:9000;
+    }
+    server {
+      listen 80;
+      server_name moxter;
+      root /var/www/html/public;
+      index index.php;
+
+      location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+      }
+      location ~ \.php$ {
+        fastcgi_pass phpfpm_backend;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include       fastcgi_params;
+      }
+
+      location ~ /\.(ht|svn|git|env) {
+          deny all;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moxter
+spec:
+  selector:
+    matchLabels:
+      app: moxter
+      type: email-proxy
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: moxter
+        type: email-proxy
+    spec:
+      volumes:
+        - name: shared-dir
+          emptyDir: {}
+        - name: configuration
+          configMap:
+            name: moxter-config
+      initContainers:
+        - name: moxter-volume-setup
+          image: registry.gitlab.com/jitesoft/open-source/php/moxter:latest
+          command: [/bin/ash, -c]
+          args: ["cp -r /app/* /var/www/html && touch /var/www/html/.env"]
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: shared-dir
+      containers:
+        - name: moxter-smtp
+          image: namshi/smtp
+          resources:
+            limits:
+              cpu: 50m
+              memory: 64Mi
+            requests:
+              cpu: 50m
+              memory: 16Mi
+        - name: moxter-fpm
+          workingDir: /var/www/html
+          imagePullPolicy: Always
+          image: registry.gitlab.com/jitesoft/open-source/php/moxter:latest
+          resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 20m
+              memory: 16Mi
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: shared-dir
+        - name: moxter-nginx
+          imagePullPolicy: Always
+          image: nginx:stable-alpine
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              name: configuration
+            - mountPath: /var/www/html
+              name: shared-dir
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
