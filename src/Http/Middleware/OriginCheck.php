@@ -35,7 +35,6 @@ class OriginCheck implements MiddlewareInterface, LoggerAwareInterface {
     public function handle(RequestInterface $request, callable $next): ResponseInterface {
         if ($this->isDevelopment) {
             $this->logger->debug('Is development, ignoring origin constraints.');
-            header('Access-Control-Allow-Origin: *');
             return $next($request);
         }
 
@@ -48,7 +47,6 @@ class OriginCheck implements MiddlewareInterface, LoggerAwareInterface {
         }
 
         $this->logger->debug('Request was accepted. Valid origin. Setting CORS header.');
-        header('Access-Control-Allow-Origin: *'); // Force header.
         /** @var JsonResponse $result */
         $result = $next($request);
         return $result->withHeader('Access-Control-Allow-Origin', $origin);

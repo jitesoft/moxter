@@ -26,6 +26,8 @@ try {
     $result->getBody()->rewind();
     $output = json_decode($result->getBody());
     $status = $result->getStatusCode();
+    // If getting here, the request is all good!
+    header('Access-Control-Allow-Origin: *'); // Force header.
 } catch (JitesoftException $ex) {
     $status = 400;
     if ($ex instanceof HttpException) {

@@ -64,6 +64,7 @@ class Kernel {
 
             try {
                 $this->logger = $this->container->get(LoggerInterface::class);
+                $this->logger->setLogLevel($config->get('DEBUG', false) ? 'debug' : 'info');
                 $this->router = $this->container->get(Router::class);
 
                 $this->router->registerMiddleWares([

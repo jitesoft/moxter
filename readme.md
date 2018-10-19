@@ -19,17 +19,17 @@ SMTP_PORT=587
 SMTP_AUTH=false
 SMTP_USER=user@example.com
 SMTP_PASSWORD=secret_password
-DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/
+SMTP_DEBUG=false
 DEBUG=false
 APP_ENV=production
-EMAIL_CONSTRAINT=/(.*)@(.*)/
-HTML_EMAILS=false
-SENDER=my@email.tdl
 SMTP_INSECURE=false
 SIGN_CERT=/path/to/cert.crt
 SIGN_KEY=/path/to/key.key
 TLS=false
-SMTP_DEBUG=false
+DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/
+EMAIL_CONSTRAINT=/(.*)@(.*)/
+HTML_EMAILS=false
+SENDER=my@email.tdl
 ```
 
 **LOG_FILE**  
