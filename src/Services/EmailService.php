@@ -47,7 +47,6 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
             );
         }
 
-
         if ($config->get('SMTP_INSECURE', false)) {
             $this->logger->warning('SMTP_INSECURE set to true. Do you really want this?');
             $this->mailer->SMTPOptions = array(
