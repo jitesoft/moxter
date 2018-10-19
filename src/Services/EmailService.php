@@ -22,13 +22,30 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
     private $logger;
     private $mailer;
 
+    private function convertTo($type) {
+        switch (mb_strtoupper($type)) {
+            case 'INT':
+                return function($val) {
+                    return intval($val);
+                };
+            case 'BOOL':
+                return function($val) {
+                    return boolval($val);
+                };
+        }
+
+        return function($val) {
+            return $val;
+        };
+    }
+
     public function __construct(ConfigInterface $config, LoggerInterface $logger, PHPMailer $mailer) {
         $this->logger = $logger;
 
         // Set up the mailer.
         $this->mailer = $mailer;
         $this->mailer->isSMTP();
-        $this->mailer->SMTPAuth = $config->get('SMTP_USER', false) ? true : false;
+        $this->mailer->SMTPAuth = isset($_ENV['SMTP_USER']);
 
         if ($this->mailer->SMTPAuth) {
             $logger->info('SMTP Auth is enabled.');
@@ -37,10 +54,10 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         }
 
         $this->mailer->SMTPAutoTLS = false;
-        $this->mailer->SMTPSecure  = $config->get('TLS', false) !== false ? 'tls' : '';
-        $this->mailer->Port        = (int)$config->get('SMTP_PORT', 25);
+        $this->mailer->SMTPSecure  = $config->get('TLS', false, $this->convertTo('bool')) ? 'tls' : '';
+        $this->mailer->Port        = $config->get('SMTP_PORT', 25, $this->convertTo('int'));
         $this->mailer->Host        = $config->get('SMTP_SERVER', 'localhost');
-        $this->mailer->SMTPDebug   = $config->get('DEBUG') === true ? 2 : 0;
+        $this->mailer->SMTPDebug   = $config->get('DEBUG', false, $this->convertTo('bool')) ? 2 : 0;
 
         $logger->info('Querying SMTP server at {ip}:{port}', [
             'ip'   => $this->mailer->Host,
@@ -52,7 +69,7 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         ]);
 
         if ($config->get('SIGN_CERT', null) !== null) {
-            $logger->info('Certificate found, signing message...');
+            $logger->info('Certificate found, signing message.');
             $mailer->sign(
                 $config->get('SIGN_CERT'),
                 $config->get('SIGN_KEY'),
@@ -60,7 +77,7 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
             );
         }
 
-        if ($config->get('SMTP_INSECURE', false)) {
+        if ($config->get('SMTP_INSECURE', false, $this->convertTo('bool'))) {
             $this->logger->warning('SMTP_INSECURE set to true. Do you really want this?');
             $this->mailer->SMTPOptions = array(
                 'ssl' => [
