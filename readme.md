@@ -24,6 +24,10 @@ APP_ENV=production
 EMAIL_CONSTRAINT=/(.*)@(.*)/
 HTML_EMAILS=false
 SENDER=my@email.tdl
+SMTP_INSECURE=false
+SIGN_CERT=/path/to/cert.crt
+SIGN_KEY=/path/to/key.key
+TLS=false
 ```
 
 **LOG_FILE**  
