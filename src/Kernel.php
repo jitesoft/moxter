@@ -89,6 +89,11 @@ class Kernel {
      * @throws HttpInternalServerErrorException
      */
     public function handleRequest(): JsonResponse {
+
+        $this->logger->info('Handling request. Application is currently in {mode} mode.', [
+            'mode' => $this->container->get(ConfigInterface::class)->get('APP_ENV')
+        ]);
+
         try {
             return $this->router->handle();
         } catch (Exception $ex) {

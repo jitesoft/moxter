@@ -5,11 +5,13 @@ use Jitesoft\Moxter\Kernel;
 
 require '../vendor/autoload.php';
 
-(new Dotenv\Dotenv('../'))->load();
+(new Dotenv\Dotenv(__DIR__ . '../'))->load();
+
 
 $output = [];
 $status = 200;
 
+header('Content-Type: application/json');
 try {
     // Load all env vars.
     $kernel = new Kernel();

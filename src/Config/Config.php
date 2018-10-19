@@ -1,6 +1,7 @@
 <?php
 namespace Jitesoft\Moxter\Config;
 
+use function getenv;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
 
 /**
