@@ -46,7 +46,7 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
             $mailer->sign(
                 $config->get('SIGN_CERT'),
                 $config->get('SIGN_KEY'),
-                $config->get('SIGN_KEY_PASS')
+                $config->get('SIGN_KEY_PASS', '')
             );
         }
 
