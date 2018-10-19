@@ -29,6 +29,7 @@ SMTP_INSECURE=false
 SIGN_CERT=/path/to/cert.crt
 SIGN_KEY=/path/to/key.key
 TLS=false
+SMTP_DEBUG=false
 ```
 
 **LOG_FILE**  
