@@ -47,6 +47,7 @@ class OriginCheck implements MiddlewareInterface, LoggerAwareInterface {
         }
 
         $this->logger->debug('Request was accepted. Valid origin. Setting CORS header.');
+        header('Access-Control-Allow-Origin: *'); // Force header.
         /** @var JsonResponse $result */
         $result = $next($request);
         return $result->withHeader('Access-Control-Allow-Origin', $origin);

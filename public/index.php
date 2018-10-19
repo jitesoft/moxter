@@ -27,7 +27,7 @@ try {
     $output = json_decode($result->getBody());
     $status = $result->getStatusCode();
 } catch (JitesoftException $ex) {
-    $code = 400;
+    $status = 400;
     if ($ex instanceof HttpException) {
         $status = $ex->getCode();
     }
