@@ -1,22 +1,22 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a95684da55ab5680dd76e9260003698",
+    "content-hash": "bada3de0f94ea30b8c323aaef796a057",
     "packages": [
         {
             "name": "jitesoft/container",
             "version": "4.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jitesoft/php-container.git",
+                "url": "https://gitlab.com/jitesoft/open-source/php/container.git",
                 "reference": "60c38729b6987c712648c1200c8ac2764ffb8aa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jitesoft/php-container/zipball/60c38729b6987c712648c1200c8ac2764ffb8aa8",
+                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fcontainer/repository/archive.zip?sha=60c38729b6987c712648c1200c8ac2764ffb8aa8",
                 "reference": "60c38729b6987c712648c1200c8ac2764ffb8aa8",
                 "shasum": ""
             },
@@ -53,12 +53,12 @@
             "version": "2.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jitesoft/php-exceptions.git",
+                "url": "https://gitlab.com/jitesoft/open-source/php/exceptions.git",
                 "reference": "c2ef6b34304c226f47e18b3fb205ca3f7f8f7cfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jitesoft/php-exceptions/zipball/c2ef6b34304c226f47e18b3fb205ca3f7f8f7cfc",
+                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Fexceptions/repository/archive.zip?sha=c2ef6b34304c226f47e18b3fb205ca3f7f8f7cfc",
                 "reference": "c2ef6b34304c226f47e18b3fb205ca3f7f8f7cfc",
                 "shasum": ""
             },
@@ -97,12 +97,12 @@
             "version": "1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jitesoft/php-loggers.git",
+                "url": "https://gitlab.com/jitesoft/open-source/php/loggers.git",
                 "reference": "4fdea8e9b83cb8056651cfb29df03a0915c9071f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jitesoft/php-loggers/zipball/4fdea8e9b83cb8056651cfb29df03a0915c9071f",
+                "url": "https://gitlab.com/api/v4/projects/jitesoft%2Fopen-source%2Fphp%2Floggers/repository/archive.zip?sha=4fdea8e9b83cb8056651cfb29df03a0915c9071f",
                 "reference": "4fdea8e9b83cb8056651cfb29df03a0915c9071f",
                 "shasum": ""
             },
@@ -179,6 +179,7 @@
                 }
             ],
             "description": "Simple wrapper around the fast route package.",
+            "abandoned": "hrafn/router",
             "time": "2018-04-03T10:56:18+00:00"
         },
         {
@@ -324,16 +325,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.0.5",
+            "version": "v6.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32"
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/cb3ea134d4d3729e7857737d5f320cce9caf4d32",
-                "reference": "cb3ea134d4d3729e7857737d5f320cce9caf4d32",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/8190d73eb5def11a43cfb020b7f36db65330698c",
+                "reference": "8190d73eb5def11a43cfb020b7f36db65330698c",
                 "shasum": ""
             },
             "require": {
@@ -386,7 +387,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2018-03-27T13:49:45+00:00"
+            "time": "2018-11-16T00:41:32+00:00"
         },
         {
             "name": "psr/container",
@@ -761,6 +762,7 @@
                 "psr",
                 "psr-7"
             ],
+            "abandoned": "laminas/laminas-diactoros",
             "time": "2018-02-26T15:44:50+00:00"
         }
     ],
@@ -1564,6 +1566,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-02-15T05:27:38+00:00"
         },
         {
@@ -2277,8 +2280,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1",
-        "ext-openssl": ">=7.1"
+        "php": ">=7.2",
+        "ext-openssl": ">=7.2"
     },
     "platform-dev": []
 }
