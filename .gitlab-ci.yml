@@ -9,25 +9,14 @@ test:
     - composer install
     - composer test
 
-build:master:
-  image: docker:latest
-  stage: build
-  before_script:
-    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
-  script:
-    - BUILD=$(docker build -q --no-cache .)
-    - TAGS="latest ${CI_COMMIT_REF_NAME}"
-    - for tag in ${TAGS}; do docker tag ${BUILD} ${CI_REGISTRY_IMAGE}:${tag}; docker push ${CI_REGISTRY_IMAGE}:${tag}; done
-  only:
-    - master
-
 build:tag:
   image: docker:latest
   stage: build
-  before_script:
-    - echo ${CI_REGISTRY_PASSWORD} | docker login registry.gitlab.com -u ${CI_REGISTRY_USER} --password-stdin
   script:
-    - docker build -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} --no-cache .
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - TAGS=$(helper "${CI_REGISTRY_NAME}" "latest,${CI_COMMIT_REF_NAMR},${CI_COMMIT_TAG}")
+    - docker buildx build --platform linux/amd64,linux/arm64 --progress plain --push ${TAGS}
+  tags:
+    - buildx
+    - protected
   only:
     - tags

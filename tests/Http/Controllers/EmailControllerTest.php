@@ -93,7 +93,7 @@ class EmailControllerTest extends AbstractTestCase {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
         $this->expectException(HttpInternalServerErrorException::class);
-        $this->expectExceptionMessage('Could not successfully send email. Please contact administrator.');
+        $this->expectExceptionMessage('Could not successfully send email.');
 
         $request = ServerRequestFactory::fromGlobals([], [], [
             'to' => 'local@local',
