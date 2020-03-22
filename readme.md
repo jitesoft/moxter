@@ -1,6 +1,11 @@
 # Moxter
 
-A small mail proxy web app to use with SPA's without api keys.  
+A small mail proxy/relay to use enable email services without api keys.
+
+**Observe** Using moxter is not the most secure way to send emails, but for a SPA or similar, without any real backend, 
+using a proxy/relay for this is better than adding client secrets in the front-end!   
+  
+If you wish to make the application more secure, using a proxy with external auth (such as traefik) might be a good idea!  
   
 ## Setup
 
