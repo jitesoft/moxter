@@ -72,3 +72,13 @@ emails behave as html emails.
 
 **SENDER**  
 The email address of the sender. Will be used on all emails sent by the api.
+
+### Docker
+
+Easiest way to run the application is to start it as a docker container. The container have latest php-fpm
+installed and will expose FPM on port 9000 by default. Connect it to your favorite proxy and pass in the environment
+variables as you seem fit and it should work right away!
+
+```
+docker run registry.gitlab.com/jitesoft/open-source/php/moxter:latest
+```
