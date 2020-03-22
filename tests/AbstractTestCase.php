@@ -6,17 +6,32 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 namespace Jitesoft\Moxter\Tests;
 
+use Closure;
 use Jitesoft\Container\Container;
 use Jitesoft\Log\NullLogger;
 use Jitesoft\Moxter\Config\Config;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
-use Jitesoft\Moxter\Contracts\EmailServiceInterface;
-use Jitesoft\Moxter\Http\Controllers\EmailController;
-use Jitesoft\Moxter\Services\EmailService;
-use PHPMailer\PHPMailer\PHPMailer;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Zend\Diactoros\Response\JsonResponse;
+
+class TestRequestHandler implements RequestHandlerInterface {
+    public bool $called;
+    private ?Closure $callback;
+
+    public function __construct(?Closure $callback = null) {
+        $this->callback = $callback;
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface {
+        $this->called = true;
+        return $this->callback ? call_user_func($this->callback, $request) : new JsonResponse([]);
+    }
+}
 
 /**
  * AbstractTestCase
@@ -28,7 +43,7 @@ class AbstractTestCase extends TestCase {
     /** @var ContainerInterface */
     protected $container;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->container = new Container();
@@ -37,9 +52,13 @@ class AbstractTestCase extends TestCase {
         $this->container->set(LoggerInterface::class, NullLogger::class, true);
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         parent::tearDown();
         $this->container->clear();
+    }
+
+    protected function  createRequestHandler(?Closure $callback = null): TestRequestHandler {
+        return new TestRequestHandler($callback);
     }
 
 }

@@ -6,6 +6,7 @@ use Jitesoft\Exceptions\Http\Server\HttpInternalServerErrorException;
 use Jitesoft\Exceptions\Validation\ValidationException;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
 use Jitesoft\Moxter\Contracts\EmailServiceInterface;
+use Jitesoft\Validator\Contracts\ValidatorInterface;
 use Jitesoft\Validator\Rules\Email;
 use Jitesoft\Validator\Rules\Text;
 use Jitesoft\Validator\Validator;
@@ -16,35 +17,39 @@ use Psr\Log\LoggerInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
 class EmailController implements LoggerAwareInterface {
+    private EmailServiceInterface $service;
+    private ValidatorInterface $validator;
+    private LoggerInterface $logger;
+    private ConfigInterface $config;
 
-    /** @var EmailServiceInterface */
-    private $service;
-    /** @var Validator */
-    private $validator;
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var ConfigInterface */
-    private $config;
-
-    public function __construct(LoggerInterface $logger, EmailServiceInterface $emailService, ConfigInterface $config) {
+    public function __construct(LoggerInterface $logger,
+                                EmailServiceInterface $emailService,
+                                ConfigInterface $config) {
         $this->logger    = $logger;
         $this->service   = $emailService;
         $this->config    = $config;
-        $this->validator = new Validator([
-            Email::class,
-            Text::class
-        ], false);
+        $this->validator = new Validator(
+            [
+                Email::class,
+                Text::class
+            ], false
+        );
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $key
-     * @return bool
+     * @return boolean
      * @throws ValidationException
      */
-    private function keyExists($data, $key) {
+    private function keyExists($data, $key): bool {
         if (!array_key_exists($key, $data)) {
-            throw new ValidationException(sprintf('Missing property: "%s".', $key));
+            throw new ValidationException(
+                sprintf(
+                    'Missing property: "%s".',
+                    $key
+                )
+            );
         }
 
         return true;
@@ -52,12 +57,13 @@ class EmailController implements LoggerAwareInterface {
 
     /**
      * @param ServerRequestInterface $request
-     * @param string $appName
+     * @param string                 $appName
      * @return ResponseInterface
      * @throws HttpInternalServerErrorException
      * @throws ValidationException
      */
-    public function handle(ServerRequestInterface $request, string $appName): ResponseInterface {
+    public function handle(ServerRequestInterface $request,
+                           string $appName): ResponseInterface {
         $this->logger->debug('Fetching body from request.');
         $body = $request->getParsedBody();
 
@@ -65,27 +71,31 @@ class EmailController implements LoggerAwareInterface {
         $this->keyExists($body, 'body');
         $this->keyExists($body, 'subject');
 
-        $result = $this->validator->validate([
-            'to' => [
-                'email' => [
-                    'pattern' => $this->config->get('EMAIL_CONSTRAINT', '/.*?/')
-                ]
-            ],
-            'subject' => [
-                'text' => [
-                    'length' => [
-                        'min' => 1
+        $result = $this->validator->validate(
+            [
+                'to'      => [
+                    'email' => [
+                        'pattern' => $this->config->get(
+                            'EMAIL_CONSTRAINT', '/.*?/'
+                        )
+                    ]
+                ],
+                'subject' => [
+                    'text' => [
+                        'length' => [
+                            'min' => 1
+                        ]
+                    ]
+                ],
+                'body'    => [
+                    'text' => [
+                        'length' => [
+                            'min' => 50
+                        ]
                     ]
                 ]
-            ],
-            'body' => [
-                'text' => [
-                    'length' => [
-                        'min' => 50
-                    ]
-                ]
-            ]
-        ], $body);
+            ], $body
+        );
 
         if (!$result) {
             return new JsonResponse($this->validator->getErrors(), 400);
@@ -94,22 +104,34 @@ class EmailController implements LoggerAwareInterface {
         $this->logger->debug('Validation completed successfully.');
 
         try {
-            $sender = $this->config->get('SENDER', 'do-not-reply@' . $appName . '.x');
+            $sender = $this->config->get(
+                'SENDER',
+                'do-not-reply@' . $appName . '.x'
+            );
             $isHtml = $this->config->get('HTML_EMAILS', false);
-            $this->service->send($sender, $appName, $body['to'], $body['subject'], $body['body'], $isHtml);
+            $this->service->send(
+                $sender,
+                $appName,
+                $body['to'],
+                $body['subject'],
+                $body['body'],
+                $isHtml
+            );
             $this->logger->info('Email sent.');
         } catch (Exception $ex) {
             $this->logger->alert('Failed to send email!');
             $this->logger->error($ex->getMessage());
             throw new HttpInternalServerErrorException(
-                'Could not successfully send email. Please contact administrator.'
+                'Could not successfully send email.'
             );
         }
 
         $this->logger->debug('Sending response to user.');
-        return new JsonResponse([
-            'message' => 'success'
-        ], 201);
+        return new JsonResponse(
+            [
+                'message' => 'success'
+            ], 201
+        );
     }
 
     /**

@@ -19,16 +19,16 @@ class ConfigTest extends AbstractTestCase {
     /** @var ConfigInterface */
     private $config;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->config = $this->container->get(ConfigInterface::class);
     }
 
-    public function testGetReturnDefault() {
+    public function testGetReturnDefault(): void {
         $this->assertEquals('HI!', $this->config->get('abc', 'HI!'));
     }
 
-    public function testGetReturnNoneDefault() {
+    public function testGetReturnNoneDefault(): void {
         $_ENV['abc'] = 'Wee!';
         $this->assertEquals('Wee!', $this->config->get('abc', 'HI!'));
         unset($_ENV['abc']);

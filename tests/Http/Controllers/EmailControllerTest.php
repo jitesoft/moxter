@@ -28,13 +28,13 @@ class EmailControllerTest extends AbstractTestCase {
     /** @var MockObject|EmailServiceInterface */
     protected $mock;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->mock = $this->createMock(EmailServiceInterface::class);
     }
 
-    public function testHandleValidationFailureTo() {
+    public function testHandleValidationFailureTo(): void {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
         $request = ServerRequestFactory::fromGlobals([], [], [
@@ -53,7 +53,7 @@ class EmailControllerTest extends AbstractTestCase {
 
     }
 
-    public function testHandleValidationFailureSubject() {
+    public function testHandleValidationFailureSubject(): void {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
         $request = ServerRequestFactory::fromGlobals([], [], [
@@ -71,7 +71,7 @@ class EmailControllerTest extends AbstractTestCase {
         ], json_decode($response->getBody()->getContents(), true));
     }
 
-    public function testHandleValidationFailureBody() {
+    public function testHandleValidationFailureBody(): void {
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
         $request = ServerRequestFactory::fromGlobals([], [], [
@@ -88,12 +88,12 @@ class EmailControllerTest extends AbstractTestCase {
         ], json_decode($response->getBody()->getContents(), true));
     }
 
-    public function testHandleExceptionOnSend() {
+    public function testHandleExceptionOnSend(): void {
         $this->mock->method('send')->willThrowException(new Exception('ARRGGHHH!!!'));
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 
         $this->expectException(HttpInternalServerErrorException::class);
-        $this->expectExceptionMessage('Could not successfully send email. Please contact administrator.');
+        $this->expectExceptionMessage('Could not successfully send email.');
 
         $request = ServerRequestFactory::fromGlobals([], [], [
             'to' => 'local@local',
@@ -104,7 +104,7 @@ class EmailControllerTest extends AbstractTestCase {
         $controller->handle($request, 'app');
     }
 
-    public function testHandleSuccess() {
+    public function testHandleSuccess(): void {
         $this->mock->method('send')->willReturn(true);
         $controller = new EmailController(new NullLogger(), $this->mock, new Config());
 

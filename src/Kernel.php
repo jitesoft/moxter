@@ -2,8 +2,10 @@
 namespace Jitesoft\Moxter;
 
 use Exception;
+use Hrafn\Router\Router;
 use Jitesoft\Container\Container;
 use Jitesoft\Exceptions\Http\Server\HttpInternalServerErrorException;
+use Jitesoft\Exceptions\Psr\Container\ContainerException;
 use Jitesoft\Log\FileLogger;
 use Jitesoft\Moxter\Config\Config;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
@@ -12,25 +14,21 @@ use Jitesoft\Moxter\Http\Controllers\EmailController;
 use Jitesoft\Moxter\Http\Middleware\ExceptionHandler;
 use Jitesoft\Moxter\Http\Middleware\OriginCheck;
 use Jitesoft\Moxter\Services\EmailService;
-use Jitesoft\Router\Router;
 use PHPMailer\PHPMailer\PHPMailer;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Class Kernel
  */
 class Kernel {
-
-    /** @var Container */
-    protected $container;
-    /** @var Router */
-    protected $router;
-    /** @var LoggerInterface */
-    protected $logger;
+    protected ContainerInterface $container;
+    protected Router $router;
+    protected LoggerInterface $logger;
 
     /**
      * @return Router
@@ -42,7 +40,6 @@ class Kernel {
     /**
      * @throws ContainerExceptionInterface
      * @throws HttpInternalServerErrorException
-     * @throws NotFoundExceptionInterface
      */
     public function __construct() {
         try {
@@ -50,8 +47,12 @@ class Kernel {
             $this->container->set(ContainerInterface::class, $this->container);
             $this->container->set(Router::class, Router::class, true);
             $this->container->set(ConfigInterface::class, Config::class, true);
-            $this->container->set(EmailServiceInterface::class, EmailService::class, true);
             $this->container->set(PHPMailer::class, new PHPMailer(true));
+            $this->container->set(
+                EmailServiceInterface::class,
+                EmailService::class,
+                true
+            );
 
             $config = $this->container->get(ConfigInterface::class);
 
@@ -64,39 +65,52 @@ class Kernel {
 
             try {
                 $this->logger = $this->container->get(LoggerInterface::class);
-                $this->logger->setLogLevel($config->get('DEBUG', false) ? 'debug' : 'info');
+                $this->logger->setLogLevel(
+                    $config->get('DEBUG', false) ? 'debug' : 'info'
+                );
                 $this->router = $this->container->get(Router::class);
 
-                $this->router->registerMiddleWares([
-                    OriginCheck::class,
-                    ExceptionHandler::class
-                ]);
-                $this->router->post('/api/v1/{app}/send', EmailController::class . '@handle', [
-                    ExceptionHandler::class,
-                    OriginCheck::class
-                ]);
+                $this->router->registerMiddleWares(
+                    [
+                        OriginCheck::class,
+                        ExceptionHandler::class
+                    ]
+                );
+
+                $this->router->getBuilder()->post(
+                    '/api/v1/{app}/send', EmailController::class . '@handle', [
+                        ExceptionHandler::class,
+                        OriginCheck::class
+                    ]
+                );
             } catch (NotFoundExceptionInterface $e) {
                 throw new Exception($e->getMessage());
             } catch (ContainerExceptionInterface $e) {
                 throw new Exception($e->getMessage());
             }
         } catch (Exception $ex) {
-            throw new HttpInternalServerErrorException('Failure in kernel creation.', 500, $ex);
+            throw new HttpInternalServerErrorException(
+                'Failure in kernel creation.',
+                500,
+                $ex
+            );
         }
     }
 
     /**
-     * @return JsonResponse
+     * @return ResponseInterface
      * @throws HttpInternalServerErrorException
      */
-    public function handleRequest(): JsonResponse {
-
-        $this->logger->info('Handling request. Application is currently in {mode} mode.', [
-            'mode' => $this->container->get(ConfigInterface::class)->get('APP_ENV')
-        ]);
-
+    public function handleRequest(): ResponseInterface {
         try {
-            return $this->router->handle();
+            $this->logger->info(
+                'Handling request. Application is currently in {mode} mode.', [
+                    'mode' => $this->container->get(
+                        ConfigInterface::class
+                    )->get('APP_ENV')
+                ]
+            );
+            return $this->router->handle(ServerRequestFactory::fromGlobals());
         } catch (Exception $ex) {
             $this->logger->error($ex->getMessage());
             throw new HttpInternalServerErrorException();

@@ -16,14 +16,21 @@ interface EmailServiceInterface {
     /**
      * Send a email.
      *
-     * @param string $from
-     * @param string $fromName
+     * @param string       $from
+     * @param string       $fromName
      * @param string|array $to
-     * @param string $subject
-     * @param string $body
-     * @param bool $html
-     * @return bool
+     * @param string       $subject
+     * @param string       $body
+     * @param boolean      $html
+     * @return boolean
      */
-    public function send(string $from, string $fromName, $to, string $subject, string $body, bool $html = false);
+    public function send(
+        string $from,
+        string $fromName,
+        $to,
+        string $subject,
+        string $body,
+        bool $html = false
+    );
 
 }

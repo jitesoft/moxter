@@ -9,9 +9,10 @@ namespace Jitesoft\Moxter\Http\Middleware;
 use Exception;
 use Jitesoft\Exceptions\Http\HttpException;
 use Jitesoft\Exceptions\Validation\ValidationException;
-use Jitesoft\Router\Contracts\MiddlewareInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Zend\Diactoros\Response\JsonResponse;
@@ -22,31 +23,10 @@ use Zend\Diactoros\Response\JsonResponse;
  * @version 1.0.0
  */
 class ExceptionHandler implements MiddlewareInterface, LoggerAwareInterface {
-
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger) {
         $this->logger = $logger;
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function handle(RequestInterface $request, callable $next): ResponseInterface {
-        try {
-            return $next($request);
-        } catch (ValidationException $ex) {
-            $this->logger->notice($ex->getMessage());
-            return new JsonResponse(['error' => $ex->getMessage()], 400);
-        } catch (HttpException $ex) {
-            $this->logger->error($ex->getMessage());
-            return new JsonResponse(['error' => $ex->getMessage()], $ex->getCode());
-        } catch (Exception $ex) {
-            $this->logger->error($ex->getMessage());
-            return new JsonResponse(['error' => 'Unknown error.'], 500);
-        }
     }
 
     /**
@@ -58,6 +38,29 @@ class ExceptionHandler implements MiddlewareInterface, LoggerAwareInterface {
      */
     public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function process(ServerRequestInterface $request,
+                            RequestHandlerInterface $handler)
+    : ResponseInterface {
+        try {
+            return $handler->handle($request);
+        } catch (ValidationException $ex) {
+            $this->logger->notice($ex->getMessage());
+            return new JsonResponse(['error' => $ex->getMessage()], 400);
+        } catch (HttpException $ex) {
+            $this->logger->error($ex->getMessage());
+            return new JsonResponse(
+                ['error' => $ex->getMessage()],
+                $ex->getCode()
+            );
+        } catch (Exception $ex) {
+            $this->logger->error($ex->getMessage());
+            return new JsonResponse(['error' => 'Unknown error.'], 500);
+        }
     }
 
 }
