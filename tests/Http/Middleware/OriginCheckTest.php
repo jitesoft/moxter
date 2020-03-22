@@ -8,13 +8,10 @@ namespace Jitesoft\Moxter\Tests\Http\Middleware;
 
 use Jitesoft\Exceptions\Http\Client\HttpUnauthorizedException;
 use Jitesoft\Log\NullLogger;
-use Jitesoft\Log\StdLogger;
 use Jitesoft\Moxter\Contracts\ConfigInterface;
 use Jitesoft\Moxter\Http\Middleware\OriginCheck;
 use Jitesoft\Moxter\Tests\AbstractTestCase;
 use Psr\Log\LoggerInterface;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\ServerRequest;
 
 /**
@@ -24,7 +21,7 @@ use Zend\Diactoros\ServerRequest;
  */
 class OriginCheckTest extends AbstractTestCase {
 
-    public function testIsDevelopment() {
+    public function testIsDevelopment(): void {
         $mockConfig = $this->createMock(ConfigInterface::class);
         $mockConfig
             ->method('get')
@@ -34,16 +31,13 @@ class OriginCheckTest extends AbstractTestCase {
         $mockLogger->method('debug')->with('Is development, ignoring origin constraints.');
 
         $middleware = new OriginCheck($mockConfig, $mockLogger);
-        $called = false;
-        $middleware->handle(new Request(), function() use (&$called) {
-            $called = true;
-            return new JsonResponse([]);
-        });
+        $cb = $this->createRequestHandler();
+        $middleware->process(new ServerRequest(), $cb);
 
-        $this->assertTrue($called);
+        $this->assertTrue($cb->called);
     }
 
-    public function testProductionInvalidOrigin() {
+    public function testProductionInvalidOrigin(): void {
         $mockConfig = $this->createMock(ConfigInterface::class);
         $mockConfig
             ->method('get')
@@ -53,28 +47,24 @@ class OriginCheckTest extends AbstractTestCase {
 
         $this->expectException(HttpUnauthorizedException::class);
 
-        $middleware->handle(new ServerRequest([
+        $middleware->process(new ServerRequest([
             'HTTP_ORIGIN' => 'https://example.se'
-        ]), function() {});
+        ]), $this->createRequestHandler());
     }
 
-    public function testProductionValidOrigin() {
+    public function testProductionValidOrigin(): void {
         $mockConfig = $this->createMock(ConfigInterface::class);
         $mockConfig
             ->method('get')
             ->willReturn('production', '/https:\/\/(.*\.)?(example)(\.(com))/');
 
         $middleware = new OriginCheck($mockConfig, new NullLogger());
-
-        $called = false;
-        $result = $middleware->handle(new ServerRequest([
+        $cb = $this->createRequestHandler();
+        $result = $middleware->process(new ServerRequest([
             'HTTP_ORIGIN' => 'https://example.com'
-        ]), function() use(&$called) {
-            $called = true;
-            return new JsonResponse([]);
-        });
+        ]), $cb);
 
-        $this->assertTrue($called);
+        $this->assertTrue($cb->called);
         $this->assertEquals('https://example.com', $result->getHeader('Access-Control-Allow-Origin')[0]);
     }
 

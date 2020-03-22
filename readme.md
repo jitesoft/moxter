@@ -26,7 +26,7 @@ SMTP_INSECURE=false
 SIGN_CERT=/path/to/cert.crt
 SIGN_KEY=/path/to/key.key
 TLS=false
-DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/
+DOMAINS=/https:\/\/(.*\.)?(.*)(\.(.*))/,https://example.com
 EMAIL_CONSTRAINT=/(.*)@(.*)/
 HTML_EMAILS=false
 SENDER=my@email.tdl
@@ -52,7 +52,8 @@ Password used to auth with the smtp server.
 
 **DOMAINS**  
 A regular expression to use for cross site scripting.  
-If the requesting origin matches the regex, it will allow for requests, else it will not.
+If the requesting origin matches the regex, it will allow for requests, else it will not.  
+This variable can be used as a list with a `,` between the different regular expressions.
 
 **DEBUG**  
 If true, the server will output debug information to the log file (`sys_get_temp_dir() . '/moxter/log.txt'`).  

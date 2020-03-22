@@ -12,38 +12,32 @@ use Jitesoft\Exceptions\Validation\ValidationException;
 use Jitesoft\Log\NullLogger;
 use Jitesoft\Moxter\Http\Middleware\ExceptionHandler;
 use Jitesoft\Moxter\Tests\AbstractTestCase;
-use Zend\Diactoros\Request;
 use Zend\Diactoros\Response\JsonResponse;
+use Zend\Diactoros\ServerRequest;
 
 /**
  * ExceptionHandlerTest
- * @author Johannes Tegnér <johannes@jitesoft.com>
+ *
+ * @author  Johannes Tegnér <johannes@jitesoft.com>
  * @version 1.0.0
  */
 class ExceptionHandlerTest extends AbstractTestCase {
 
-    public function testWithoutException() {
-        $eh     = new ExceptionHandler(new NullLogger());
-        $called = false;
-
-        $eh->handle(new Request(), function() use(&$called) {
-            $called = true;
-            return new JsonResponse([]);
-        });
-
-        $this->assertTrue($called);
+    public function testWithoutException(): void {
+        $eh = new ExceptionHandler(new NullLogger());
+        $callback = $this->createRequestHandler();
+        $eh->process(new ServerRequest(), $callback);
+        $this->assertTrue($callback->called);
     }
 
-    public function testWithValidationException() {
-        $eh     = new ExceptionHandler(new NullLogger());
-        $called = false;
-
-        $out = $eh->handle(new Request(), function() use(&$called) {
-            $called = true;
+    public function testWithValidationException(): void {
+        $eh = new ExceptionHandler(new NullLogger());
+        $callback = $this->createRequestHandler(function () {
             throw new ValidationException();
         });
 
-        $this->assertTrue($called);
+        $out = $eh->process(new ServerRequest(), $callback);
+        $this->assertTrue($callback->called);
         $this->assertInstanceOf(JsonResponse::class, $out);
         $this->assertEquals(400, $out->getStatusCode());
         $out->getBody()->rewind();
@@ -51,16 +45,14 @@ class ExceptionHandlerTest extends AbstractTestCase {
         $this->assertEquals('Validation failed.', json_decode($result)->error);
     }
 
-    public function testWithHttpException() {
-        $eh     = new ExceptionHandler(new NullLogger());
-        $called = false;
-
-        $out = $eh->handle(new Request(), function() use(&$called) {
-            $called = true;
+    public function testWithHttpException(): void {
+        $eh = new ExceptionHandler(new NullLogger());
+        $callback = $this->createRequestHandler(function () {
             throw new HttpNotFoundException();
         });
 
-        $this->assertTrue($called);
+        $out = $eh->process(new ServerRequest(), $callback);
+        $this->assertTrue($callback->called);
         $this->assertInstanceOf(JsonResponse::class, $out);
         $this->assertEquals(404, $out->getStatusCode());
         $out->getBody()->rewind();
@@ -68,16 +60,14 @@ class ExceptionHandlerTest extends AbstractTestCase {
         $this->assertEquals('Resource not found.', json_decode($result)->error);
     }
 
-    public function testWithStandardException() {
-        $eh     = new ExceptionHandler(new NullLogger());
-        $called = false;
-
-        $out = $eh->handle(new Request(), function() use(&$called) {
-            $called = true;
+    public function testWithStandardException(): void {
+        $eh = new ExceptionHandler(new NullLogger());
+        $callback = $this->createRequestHandler(static function () {
             throw new Exception('Argh!');
         });
 
-        $this->assertTrue($called);
+        $out = $eh->process(new ServerRequest(), $callback);
+        $this->assertTrue($callback->called);
         $this->assertInstanceOf(JsonResponse::class, $out);
         $this->assertEquals(500, $out->getStatusCode());
         $out->getBody()->rewind();

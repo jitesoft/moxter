@@ -14,32 +14,28 @@ use Psr\Log\LoggerInterface;
 
 /**
  * EmailService
- * @author Johannes Tegnér <johannes@jitesoft.com>
+ *
+ * @author  Johannes Tegnér <johannes@jitesoft.com>
  * @version 1.0.0
  */
 class EmailService implements EmailServiceInterface, LoggerAwareInterface {
-
-    private $logger;
-    private $mailer;
+    private LoggerInterface $logger;
+    private PHPMailer $mailer;
 
     private function convertTo($type) {
         switch (mb_strtoupper($type)) {
             case 'INT':
-                return function($val) {
-                    return intval($val);
-                };
+                return static fn($val) => (int)$val;
             case 'BOOL':
-                return function($val) {
-                    return boolval($val);
-                };
+                return static fn($val) => strtolower($val) === 'true';
         }
 
-        return function($val) {
-            return $val;
-        };
+        return static fn($val) => $val;
     }
 
-    public function __construct(ConfigInterface $config, LoggerInterface $logger, PHPMailer $mailer) {
+    public function __construct(ConfigInterface $config,
+                                LoggerInterface $logger,
+                                PHPMailer $mailer) {
         $this->logger = $logger;
 
         // Set up the mailer.
@@ -54,19 +50,35 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         }
 
         $this->mailer->SMTPAutoTLS = true;
-        $this->mailer->SMTPSecure  = $config->get('TLS', false, $this->convertTo('bool')) ? 'tls' : '';
-        $this->mailer->Port        = $config->get('SMTP_PORT', 25, $this->convertTo('int'));
+        $this->mailer->Port        = $config->get(
+            'SMTP_PORT',
+            25,
+            $this->convertTo('int')
+        );
         $this->mailer->Host        = $config->get('SMTP_SERVER', 'localhost');
-        $this->mailer->SMTPDebug   = $config->get('SMTP_DEBUG', false, $this->convertTo('bool')) ? 2 : 0;
+        $this->mailer->SMTPSecure  = $config->get(
+            'TLS',
+            false,
+            $this->convertTo('bool')
+        ) ? 'tls' : '';
+        $this->mailer->SMTPDebug   = $config->get(
+            'SMTP_DEBUG',
+            false,
+            $this->convertTo('bool')
+        ) ? 2 : 0;
 
-        $logger->info('Querying SMTP server at {ip}:{port}', [
-            'ip'   => $this->mailer->Host,
-            'port' => $this->mailer->Port
-        ]);
+        $logger->info(
+            'Querying SMTP server at {ip}:{port}', [
+                'ip'   => $this->mailer->Host,
+                'port' => $this->mailer->Port
+            ]
+        );
 
-        $logger->info('TLS is {active}.', [
-           $this->mailer->SMTPSecure ? 'active' : 'inactive'
-        ]);
+        $logger->info(
+            'TLS is {active}.', [
+                $this->mailer->SMTPSecure ? 'active' : 'inactive'
+            ]
+        );
 
         if ($config->get('SIGN_CERT', null) !== null) {
             $logger->info('Certificate found, signing message.');
@@ -77,8 +89,10 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
             );
         }
 
-        if ($config->get('SMTP_INSECURE', false, $this->convertTo('bool'))) {
-            $this->logger->warning('SMTP_INSECURE set to true. Do you really want this?');
+        if ($config->get('SMTP_INSECURE',false, $this->convertTo('bool'))) {
+            $this->logger->warning(
+                'SMTP_INSECURE set to true. Do you really want this?'
+            );
             $this->mailer->SMTPOptions = array(
                 'ssl' => [
                     'verify_peer'       => false,
@@ -92,16 +106,21 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
     /**
      * Send a email.
      *
-     * @param string $from
-     * @param string $fromName
-     * @param string|array $to
-     * @param string $subject
-     * @param string $body
-     * @param bool $html
-     * @return bool
+     * @param string       $from     Email address for the FROM field.
+     * @param string       $fromName Name for the FROM field.
+     * @param string|array $to       Email address/es to send email to.
+     * @param string       $subject  Subject line of email.
+     * @param string       $body     Email body.
+     * @param boolean      $html     If body is HTML or not.
+     * @return boolean
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function send(string $from, string $fromName, $to, string $subject, string $body, bool $html = false) {
+    public function send(string $from,
+                         string $fromName,
+                         $to,
+                         string $subject,
+                         string $body,
+                         bool $html = false) {
         $this->logger->info('Email service queried to send email.');
 
         $to = (is_array($to) ? $to : [$to]);
@@ -116,9 +135,11 @@ class EmailService implements EmailServiceInterface, LoggerAwareInterface {
         $this->mailer->Subject = $subject;
         $this->mailer->Body    = $body;
 
-        $this->logger->debug('Email created, sending to {rec} recipients.', [
-            'rec' => count($to)
-        ]);
+        $this->logger->debug(
+            'Email created, sending to {rec} recipients.', [
+                'rec' => count($to)
+            ]
+        );
 
         return $this->mailer->send();
     }

@@ -2,7 +2,7 @@ FROM jitesoft/composer:latest AS build
 COPY ./ /app
 RUN composer install --no-progress --prefer-dist --no-dev --no-suggest -o
 
-FROM jitesoft/php-fpm:latest
+FROM jitesoft/php:fpm
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>"
 ENV LOG_FILE="/dev/stdout" \
     SMTP_SERVER="mail.example.com" \
