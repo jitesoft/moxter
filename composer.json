@@ -4,22 +4,25 @@
     "type": "project",
     "require": {
         "php": ">=7.4",
+        "ext-json": ">=7.4",
         "ext-openssl": ">=7.4",
         "vlucas/phpdotenv": "^4.1",
-        "nesbot/carbon": "^2.31",
-        "zendframework/zend-diactoros": "^2.2",
+        "symfony/yaml": "5.0.*",
+        "nesbot/carbon": "^2.34",
+        "laminas/laminas-diactoros": "^2.2",
         "phpmailer/phpmailer": "^6.1",
         "jitesoft/container": "^4.0",
         "jitesoft/exceptions": "^2.3",
         "jitesoft/validator": "^0.2",
         "hrafn/router": "0.4.*",
-        "jitesoft/loggers": "^1.2"
+        "jitesoft/loggers": "^2.0"
     },
     "scripts": {
         "test": "phpunit --config=phpunit.xml && phpcs --report=summary --standard=style.xml src/",
         "sniff": " phpcs --standard=style.xml src/"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "phpunit/phpunit": "^9.0",
         "squizlabs/php_codesniffer": "^3.5"
     },

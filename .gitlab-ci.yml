@@ -2,12 +2,9 @@ stages:
   - test
   - build
 
-test:
-  image: jitesoft/composer:latest
-  stage: test
-  script:
-    - composer install
-    - composer test
+include:
+  - file: /php/auto.yml
+    project: jitesoft/gitlab-ci-lib
 
 build:tag:
   image: docker:latest
